@@ -8,8 +8,6 @@
 # ChangeLog:
 #   19 March 2012  **  v0.5  **  First version put in $HOME/bin to be used in Eclipse projects or otherwise
 # ToDo:
-#   Remove perl path retrieval, mkmf.rb is executable directly
-#   Add verbose switch
 #   add bash completion
 # WishList:
 #   Allow project dir paths with white space (currently fails by producing a bad make file)
@@ -46,6 +44,13 @@ ERR_PERLNOTFOUND=101
 ERR_MKMFNOTFOUND=102
 ERR_NOSOURCEDIRECTORY=103
 ERR_WHITESPACEINPATH=104
+}
+
+# this is a simple function to output stuff conditionally based on VERBOSE=Y/N
+function f_out() {
+    if [ "$VERBOSE" == "Y" ]; then
+        echo "+-+ $1"
+    fi    
 }
 
 # this function will export symbols for a single compiler-configuration set
@@ -131,6 +136,13 @@ function export_symbols() {
         fi
                 
     fi
+    
+    f_out "Encountered the following compiler/config pair: $1/$2"
+    f_out "Exported the following compiler/linker variables:"
+    f_out "FC = $FC"
+    f_out "LD = $LD"
+    f_out "FFLAGS = $FFLAGS"
+    f_out "LDFLAGS = $LDFLAGS"
 
 }
 
@@ -175,6 +187,7 @@ function usage() {
     echo "   -n (NAME)     $TAB the project name to use for creating the executable"
     echo "                 $TAB   <string> $TAB (DEFAULT is the current folder name \"$THISFOLDER\")"
     echo "   -d (DONTMAKE) $TAB skips the makefile generation step, overridden by \"-t makemake\""
+    echo "   -v (VERBOSE)  $TAB spew much more output"
     echo " "
     echo "Examples:"
     echo "1) Build with defaults (ifort, debug, build, myproject)"
@@ -202,7 +215,8 @@ FTARGET=build
 PROJECTNAME=`echo ${PWD##*/}`
 FORK=N
 SKIPMAKINGMAKE=N
-while getopts "hdsc:f:t:n:" OPTION; do
+VERBOSE=N
+while getopts "vhdsc:f:t:n:" OPTION; do
     case $OPTION in
         h) 
             usage
@@ -226,6 +240,7 @@ while getopts "hdsc:f:t:n:" OPTION; do
             else
                 FCOMPILER=$OPTARG
             fi
+            f_out "Processed command line option \"$OPTION\""
             ;;
         f)
             if [ "$OPTARG" == "all" ]; then
@@ -233,18 +248,27 @@ while getopts "hdsc:f:t:n:" OPTION; do
             else
                 FCONFIG=$OPTARG
             fi
+            f_out "Processed command line option \"$OPTION\""
             ;;
         t)
             FTARGET=$OPTARG
+            f_out "Processed command line option \"$OPTION\""
             ;;
         n)
             PROJECTNAME=$OPTARG
+            f_out "Processed command line option \"$OPTION\""
             ;;
         s)  
             FORK=Y
+            f_out "Processed command line option \"$OPTION\""
             ;;
         d)
             SKIPMAKINGMAKE=Y
+            f_out "Processed command line option \"$OPTION\""
+            ;;
+        v)
+            VERBOSE=Y
+            f_out "Processed command line option \"$OPTION\""
             ;;
         ?)
             usage
@@ -255,6 +279,7 @@ done
   
   # get the present (project) directory
 PROJECTDIR=`pwd`
+f_out "Project directory found at: $PROJECTDIR"
 
   # check to make sure path doesn't have white space...a current limitation
 case $PROJECTDIR in 
@@ -265,6 +290,7 @@ case $PROJECTDIR in
         ;;  
     *) 
         # no white space found...we're good
+        f_out "Project directory found to be white-space-free, moving on..."
         ;; 
 esac
 
@@ -272,6 +298,8 @@ esac
 if [ ! -d "${PROJECTDIR}/src" ]; then
     echo "Could not find src subdirectory in current directory...current dir=\"${PROJECTDIR}\""
     exit $ERR_NOSOURCEDIRECTORY
+else
+    f_out "Found the src subdirectory, moving on..."
 fi
 
   # this script is going to call perl to run the mkmf script, find perl
@@ -279,6 +307,8 @@ PERLPATH=`which perl`
 if [ -z ${PERLPATH} ]; then
     echo "Could not find Perl, either not installed on this machine or not on $PATH...script aborting"
     exit $ERR_PERLNOTFOUND
+else
+    f_out "Found the path to a perl executable, moving on..."
 fi
       
   # get mkmf path here, trim white space
@@ -287,6 +317,8 @@ MKMFPATH=`which mkmf.rb`
 if [ -z ${MKMFPATH} ]; then
     echo "Could not find mkmf.rb, either not available on this machine or not on $PATH...script aborting"
     exit $ERR_MKMFNOTFOUND
+else
+    f_out "Found the mkmf.rb file, moving on..."
 fi
    
   # now determine what to actually do here, the command line argument processor will have filled these arrays appropriately
@@ -305,7 +337,7 @@ for COMP in $FCOMPILER; do
           # you will make a makefile everytime except one case: -d flag is given (SKIPMAKINGMAKE=Y) +-+ AND +-+ -t is NOT MAKEMAKE ("$FTARGET" != "makemake")
         if [ "$SKIPMAKINGMAKE" == Y ] && [ "$FTARGET" != "makemake" ]; then
             #skip making the make file
-            DUMMY=1
+            f_out "Skipped making the make file"
         else
             #do make the make file for all other cases
             if [ "$COMP" == "mingw" ]; then
