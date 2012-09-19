@@ -10,13 +10,16 @@
 # ToDo:
 #   Remove perl path retrieval, mkmf.rb is executable directly
 #   Add verbose switch
+#   add bash completion
+# WishList:
 #   Allow project dir paths with white space (currently fails by producing a bad make file)
+#    -- this will be difficult due to 'make' limitations with white space
 
 # PROJECT BUILD FILE/DIRECTORY STRUCTURE
 # root project directory (contains the final executables)
 #   src subdirectory (all f90, F90, h, etc. fortran files to be compiled)
 #   bin (subdirectory, no files within)
-#     intel (subdirectory, no files within)
+#     ifort (subdirectory, no files within)
 #       debug (subdirectory, contains all mod and o files, along with the actual compiler specific makefile)
 #       release (same)
 #     similar for other compilers (g95, gfortran, mingw-gfortran)
@@ -33,7 +36,7 @@
 #  $PERLPATH=<the full path to the system's perl executable>
 #  $MKMFPATH=<the full path to the mkmf.rb script, somewhere on path>
 # this script will export the following symbols
-#  $FC
+#  $FC=<compiler exec>
 #  $LD=<linker exec> 
 #  $FFLAGS=<compiler options>
 #  $LDFLAGS=<linker options>
@@ -51,8 +54,8 @@ function export_symbols() {
 
     # the specific compiler and configuration (compiler switches) can be set here based on FCOMPILER and FCONFIG
 
-    if [ "$1" == "intel" ]; then
-
+    if [ "$1" == "ifort" ]; then
+        
         export FC="/opt/intel/composerxe/bin/ifort"
         export LD="/opt/intel/composerxe/bin/ifort"
         
@@ -136,6 +139,7 @@ function usage() {
     
     local THISFILE=$(basename $0)
     local TAB=$( printf "\t" )
+    local THISFOLDER=`echo ${PWD##*/}`
     echo "usage: $THISFILE  [-s] [-c <COMPILER>] [-f <CONFIGURATION>] [-t <TARGET>] [-n <PROJECTNAME>]"
     echo " "
     echo " Use this script to create make files, and build executables as needed for a given fortran project"
@@ -145,7 +149,7 @@ function usage() {
     echo "   -h (HELP)     $TAB show this message"
     echo "   -c (COMPILER) $TAB builds the project using the entired compiler, valid entries are:"
     if [ ! -z `which ifort` ]; then
-    echo "                 $TAB   intel*   $TAB (intel fortran compiler)"
+    echo "                 $TAB   ifort*   $TAB (intel fortran compiler)"
     fi
     if [ ! -z `which g95` ]; then
     echo "                 $TAB   g95      $TAB (g95 fortran compiler)"
@@ -169,10 +173,11 @@ function usage() {
     echo "                 $TAB   build*   $TAB (creates the make file and builds)"
     echo "                 $TAB   rebuild  $TAB (performs clean then build operations)"
     echo "   -n (NAME)     $TAB the project name to use for creating the executable"
-    echo "                 $TAB   <string> $TAB (DEFAULT is \"myproject\")"
+    echo "                 $TAB   <string> $TAB (DEFAULT is the current folder name \"$THISFOLDER\")"
+    echo "   -d (DONTMAKE) $TAB skips the makefile generation step, overridden by \"-t makemake\""
     echo " "
     echo "Examples:"
-    echo "1) Build with defaults (intel, debug, build, myproject)"
+    echo "1) Build with defaults (ifort, debug, build, myproject)"
     echo "  $THISFILE"
     echo " "
     echo "2) Create a g95 release make file for project EnergyMinus"
@@ -191,12 +196,13 @@ if [ -e /opt/intel/bin/ifortvars.sh ]; then
 fi
     
   # process command line arguments
-FCOMPILER=intel
+FCOMPILER=ifort
 FCONFIG=debug
 FTARGET=build
-PROJECTNAME=myproject
+PROJECTNAME=`echo ${PWD##*/}`
 FORK=N
-while getopts "hsc:f:t:n:" OPTION; do
+SKIPMAKINGMAKE=N
+while getopts "hdsc:f:t:n:" OPTION; do
     case $OPTION in
         h) 
             usage
@@ -236,6 +242,9 @@ while getopts "hsc:f:t:n:" OPTION; do
             ;;
         s)  
             FORK=Y
+            ;;
+        d)
+            SKIPMAKINGMAKE=Y
             ;;
         ?)
             usage
@@ -293,11 +302,17 @@ for COMP in $FCOMPILER; do
           # export the symbols for this compiler configuration
         export_symbols $COMP $CONF
 
-          # for kicks, just always generate a make file -- it shouldn't be a time hog, even for E+!
-        if [ "$COMP" == "mingw" ]; then
-            ${PERLPATH} -- "${MKMFPATH}" -a "$PROJECTDIR/src" -p "$PROJECTDIR/${PROJECTNAME}_${COMP}_${CONF}.exe" -m "${WORKINGDIR}/makefile"
+          # you will make a makefile everytime except one case: -d flag is given (SKIPMAKINGMAKE=Y) +-+ AND +-+ -t is NOT MAKEMAKE ("$FTARGET" != "makemake")
+        if [ "$SKIPMAKINGMAKE" == Y ] && [ "$FTARGET" != "makemake" ]; then
+            #skip making the make file
+            DUMMY=1
         else
-            ${PERLPATH} -- "${MKMFPATH}" -a "$PROJECTDIR/src" -p "$PROJECTDIR/${PROJECTNAME}_${COMP}_${CONF}" -m "${WORKINGDIR}/makefile"
+            #do make the make file for all other cases
+            if [ "$COMP" == "mingw" ]; then
+                ${PERLPATH} -- "${MKMFPATH}" -a "$PROJECTDIR/src" -p "$PROJECTDIR/${PROJECTNAME}_${COMP}_${CONF}.exe" -m "${WORKINGDIR}/makefile"
+            else
+                ${PERLPATH} -- "${MKMFPATH}" -a "$PROJECTDIR/src" -p "$PROJECTDIR/${PROJECTNAME}_${COMP}_${CONF}" -m "${WORKINGDIR}/makefile"
+            fi
         fi
 
           # if we just needed to make a make file, then we are done
