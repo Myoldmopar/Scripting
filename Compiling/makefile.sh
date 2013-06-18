@@ -7,8 +7,10 @@
 #   This script will generate a make file and maybe run it based on cl args
 # ChangeLog:
 #   19 March 2012  **  v0.5  **  First version put in $HOME/bin to be used in Eclipse projects or otherwise
+#   17 June  2013  **  v0.6  **  Generalization, trying to clean up hacks that were hardwired to Intel
 # ToDo:
 #   add bash completion
+#   don't assume ifort will be there, use only available options...if none then error and exit
 # WishList:
 #   Allow project dir paths with white space (currently fails by producing a bad make file)
 #    -- this will be difficult due to 'make' limitations with white space
@@ -61,8 +63,10 @@ function export_symbols() {
 
     if [ "$1" == "ifort" ]; then
         
-        export FC="/opt/intel/composerxe/bin/ifort"
-        export LD="/opt/intel/composerxe/bin/ifort"
+        export FC="ifort" 
+        #"/opt/intel/composerxe/bin/ifort"
+        export LD="ifort" 
+        #"/opt/intel/composerxe/bin/ifort"
         
         if [ "$2" == "debug" ]; then
         
@@ -125,13 +129,13 @@ function export_symbols() {
         
               #### these are for mingw debug
             export FFLAGS="-O0 -g -cpp -I /usr/include -ffree-line-length-300"
-            export LDFLAGS="-O0 -g -B /usr/lib"
+            export LDFLAGS="-O0 -g -B /usr/lib -static-libgcc -static-libgfortran"
 
         elif [ "$2" == "release" ]; then
-
+        
               #### these are for mingw release
-            export FFLAGS="-O3 -cpp -I /usr/include  -ffree-line-length-1300"
-            export LDFLAGS="-O3 -B /usr/lib"
+            export FFLAGS="-O3 -cpp -I /usr/include  -ffree-line-length-300"
+            export LDFLAGS="-O3 -B /usr/lib -static-libgcc -static-libgfortran"
 
         fi
                 
@@ -203,11 +207,6 @@ function usage() {
 
 ###### MAIN OPERATION ######
 
-  # hack to get intel in the path
-if [ -e /opt/intel/bin/ifortvars.sh ]; then
-    . /opt/intel/bin/ifortvars.sh intel64
-fi
-    
   # process command line arguments
 FCOMPILER=ifort
 FCONFIG=debug
