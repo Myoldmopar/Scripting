@@ -8,6 +8,7 @@
 # ChangeLog:
 #   19 March 2012  **  v0.5  **  First version put in $HOME/bin to be used in Eclipse projects or otherwise
 #   17 June  2013  **  v0.6  **  Generalization, trying to clean up hacks that were hardwired to Intel
+#   1  Aug   2013  **  v0.7  **  Added some flags to ifort to muffle dumb remarks, trapped for bad args
 # ToDo:
 #   add bash completion
 #   don't assume ifort will be there, use only available options...if none then error and exit
@@ -46,6 +47,7 @@ ERR_PERLNOTFOUND=101
 ERR_MKMFNOTFOUND=102
 ERR_NOSOURCEDIRECTORY=103
 ERR_WHITESPACEINPATH=104
+ERR_BADARGUMENT=105
 }
 
 # this is a simple function to output stuff conditionally based on VERBOSE=Y/N
@@ -64,20 +66,18 @@ function export_symbols() {
     if [ "$1" == "ifort" ]; then
         
         export FC="ifort" 
-        #"/opt/intel/composerxe/bin/ifort"
         export LD="ifort" 
-        #"/opt/intel/composerxe/bin/ifort"
         
         if [ "$2" == "debug" ]; then
         
               #### these are for intel compiler/debug config
-            export FFLAGS="-O0 -traceback -fpp -g -I /usr/include"
+            export FFLAGS="-O0 -traceback -fpp -g -I /usr/include -diag-disable 8291"
             export LDFLAGS="-O0 -g -B /usr/lib"
 
         elif [ "$2" == "release" ]; then
 
               #### these are for intel release
-            export FFLAGS="-O3 -fpp -I /usr/include "
+            export FFLAGS="-O3 -fpp -I /usr/include -diag-disable 8291"
             export LDFLAGS="-O3 -B /usr/lib"
       
         fi
@@ -86,7 +86,7 @@ function export_symbols() {
 
         export FC="g95"
         export LD="g95"
-        
+                
         if [ "$2" == "debug" ]; then
         
               #### these are g95 debug
@@ -247,10 +247,18 @@ while getopts "vhdsc:f:t:n:" OPTION; do
             else
                 FCONFIG=$OPTARG
             fi
+            if [[ ! "debug release" =~ $FCONFIG ]]; then
+                echo "Bad configuration entered...must be either debug or release"
+                exit $ERR_BADARGUMENT
+            fi
             f_out "Processed command line option \"$OPTION\""
             ;;
         t)
             FTARGET=$OPTARG
+            if [[ ! "makemake clean build rebuild" =~ $FTARGET ]]; then
+                echo "Bad target, must be one of: makemake, clean, build, or rebuild"
+                exit $ERR_BADARGUMENT
+            fi
             f_out "Processed command line option \"$OPTION\""
             ;;
         n)
