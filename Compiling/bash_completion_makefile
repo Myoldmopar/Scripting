@@ -1,5 +1,8 @@
 
 # here is a bash completion file for the makefile.sh script
+
+# mostly learned from: http://www.debian-administration.org/articles/316
+
 # it will process the option flags:
 # -f (conFiguration: debug, release, all
 # -c (compiler: ifort, gfortran, mingw, all -- note this list is not dynamically determined right now)
