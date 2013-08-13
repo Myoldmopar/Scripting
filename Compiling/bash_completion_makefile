@@ -1,0 +1,53 @@
+
+# here is a bash completion file for the makefile.sh script
+# it will process the option flags:
+# -f (conFiguration: debug, release, all
+# -c (compiler: ifort, gfortran, mingw, all -- note this list is not dynamically determined right now)
+# -t (target: makemake, clean, build, rebuild)
+# it does not process arguments for the arg-less options:
+# -s (fork child processes for concurrent building)
+# -v (verbose)
+# -h (help)
+# it also does not process arguments for the output binary name argument
+# -n (name)
+# even though it does not process arguments for these other ones, it still lists them as possible arguments
+
+# define the completion function here
+_makefile.sh()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    
+    # we'll complete the following options:
+    opts="-f -c -t -s -v -h -n"
+   
+    # look at what the previous token is, and provide options based on this  
+    case "${prev}" in
+        "-f")
+            local types="debug release all"
+            COMPREPLY=( $(compgen -W "${types}" -- ${cur}) )
+            return 0
+            ;;
+        "-c")
+            local types="ifort gfortran mingw all"
+            COMPREPLY=( $(compgen -W "${types}" -- ${cur}) )
+            return 0
+            ;;
+        "-t")
+            local types="makemake clean build rebuild"
+            COMPREPLY=( $(compgen -W "${types}" -- ${cur}) )
+            return 0
+            ;;         
+        *)
+            ;;
+    esac
+    
+    # if we haven't returned, then we must not have matched a arg-option, so just list all the options
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
+}
+
+# then add this function to the list of completion, and assign it to the binary makefile.sh
+complete -F _makefile.sh makefile.sh

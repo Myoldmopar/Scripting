@@ -10,7 +10,6 @@
 #   17 June  2013  **  v0.6  **  Generalization, trying to clean up hacks that were hardwired to Intel
 #   1  Aug   2013  **  v0.7  **  Added some flags to ifort to muffle dumb remarks, trapped for bad args
 # ToDo:
-#   add bash completion
 #   don't assume ifort will be there, use only available options...if none then error and exit
 # WishList:
 #   Allow project dir paths with white space (currently fails by producing a bad make file)
