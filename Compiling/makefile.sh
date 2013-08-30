@@ -70,13 +70,13 @@ function export_symbols() {
         if [ "$2" == "debug" ]; then
         
               #### these are for intel compiler/debug config
-            export FFLAGS="-O0 -traceback -fpp -g -I /usr/include -diag-disable 8291"
+            export FFLAGS="-O0 -traceback -fpp -fpe0 -g -I /usr/include -diag-disable 8291"
             export LDFLAGS="-O0 -g -B /usr/lib"
 
         elif [ "$2" == "release" ]; then
 
               #### these are for intel release
-            export FFLAGS="-O3 -fpp -I /usr/include -diag-disable 8291"
+            export FFLAGS="-O3 -fpp -fpe0 -I /usr/include -diag-disable 8291"
             export LDFLAGS="-O3 -B /usr/lib"
       
         fi
@@ -288,17 +288,17 @@ PROJECTDIR=`pwd`
 f_out "Project directory found at: $PROJECTDIR"
 
   # check to make sure path doesn't have white space...a current limitation
-case $PROJECTDIR in 
-    *\ *) 
-        echo "White space encountered in project path...makefiles don't exactly support white space (or commas)."
-        echo "A workaround is to symlink to here from a white-space-clean path"
-        exit $ERR_WHITESPACEINPATH
-        ;;  
-    *) 
-        # no white space found...we're good
-        f_out "Project directory found to be white-space-free, moving on..."
-        ;; 
-esac
+#case $PROJECTDIR in 
+    #*\ *) 
+        #echo "White space encountered in project path...makefiles don't exactly support white space (or commas)."
+        #echo "A workaround is to symlink to here from a white-space-clean path"
+        #exit $ERR_WHITESPACEINPATH
+        #;;  
+    #*) 
+        ## no white space found...we're good
+        #f_out "Project directory found to be white-space-free, moving on..."
+        #;; 
+#esac
 
   # check to make sure source directory is present before doing anything else
 if [ ! -d "${PROJECTDIR}/src" ]; then
