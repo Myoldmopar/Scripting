@@ -1,0 +1,71 @@
+Refrigeration:WalkIn,
+    A15 Ice Cream Freezer,   !- Name
+    ALWAYS_ON_OffSDD,        !- Availability Schedule Name
+    6440,                    !- Rated Coil Cooling Capacity {W}
+    -20.56,                  !- Operating Temperature {C}
+    -23.33,                  !- Rated Cooling Source Temperature {C}
+    220,                     !- Rated Total Heating Power {W}
+    WalkIn_Heater_Schedule_Always_On_OffSDD,  !- Heating Power Schedule Name
+    550,                     !- Rated Cooling Coil Fan Power {W}
+    0,                       !- Rated Circulation Fan Power {W}
+    44,                      !- Rated Total Lighting Power {W}
+    Refrigerated_Case_Lighting_Schedule_Always_On_OffSDD,  !- Lighting Schedule Name
+    Electric,                !- Defrost Type
+    TimeSchedule,            !- Defrost Control Type
+    defrost_sch 46,          !- Defrost Schedule Name
+    defrost_sch 46,          !- Defrost Drip-Down Schedule Name
+    5764,                    !- Defrost Power {W}
+    0.7,                     !- Temperature Termination Defrost Fraction to Ice {dimensionless}
+    NO_RESTOCKING,           !- Restocking Schedule Name
+    ,                        !- Average Refrigerant Charge Inventory {kg}
+    8.18,                    !- Insulated Floor Surface Area {m2}
+    0.28,                    !- Insulated Floor U-Value {W/m2-K}
+    DryStorage,              !- Zone 1 Name
+    37.94,                   !- Total Insulated Surface Area Facing Zone 1 {m2}
+    0.23,                    !- Insulated Surface U-Value Facing Zone 1 {W/m2-K}
+    0.00,                    !- Area of Glass Reach In Doors Facing Zone 1 {m2}
+    0.00,                    !- Height of Glass Reach In Doors Facing Zone 1 {m}
+    2.27,                    !- Glass Reach In Door U Value Facing Zone 1 {W/m2-K}
+    REACHIN_DOOR_OPEN_SCHEDULE,  !- Glass Reach In Door Opening Schedule Name Facing Zone 1
+    0,                       !- Area of Stocking Doors Facing Zone 1 {m2}
+    0,                       !- Height of Stocking Doors Facing Zone 1 {m}
+    0.28,                    !- Stocking Door U Value Facing Zone 1 {W/m2-K}
+    WALKIN_DOOR_OPEN_SCHEDULE,  !- Stocking Door Opening Schedule Name Facing Zone 1
+    None;                    !- Stocking Door Opening Protection Type Facing Zone 1
+
+!********************  Rack A CASE : A1 Dual Temp Coffin  ********************
+Refrigeration:Case,
+    A1 Dual Temp Coffin,     !- Name
+    ALWAYS_ON_OffSDD,        !- Availability Schedule Name
+    Sales,                   !- Zone Name
+    23.9,                    !- Rated Ambient Temperature {C}
+    55,                      !- Rated Ambient Relative Humidity {percent}
+    601,                     !- Rated Total Cooling Capacity per Unit Length {W/m}
+    0.15,                    !- Rated Latent Heat Ratio
+    0.75,                    !- Rated Runtime Fraction
+    2.4,                     !- Case Length {m}
+    -21.7,                   !- Case Operating Temperature {C}
+    DewpointMethod,          !- Latent Case Credit Curve Type
+    OpenMultiShelf_Dairy_LatentCaseCreditCurve,  !- Latent Case Credit Curve Name
+    98.4,                    !- Standard Case Fan Power per Unit Length {W/m}
+    98.4,                    !- Operating Case Fan Power per Unit Length {W/m}
+    0,                       !- Standard Case Lighting Power per Unit Length {W/m}
+    0,                       !- Installed Case Lighting Power per Unit Length {W/m}
+    Refrigerated_Case_Lighting_Schedule_3,  !- Case Lighting Schedule Name
+    0,                       !- Fraction of Lighting Energy to Case
+    53.1,                    !- Case Anti-Sweat Heater Power per Unit Length {W/m}
+    21.24,                   !- Minimum Anti-Sweat Heater Power per Unit Length {W/m}
+    DewpointMethod,          !- Anti-Sweat Heater Control Type
+    28,                      !- Humidity at Zero Anti-Sweat Heater Energy {percent}
+    ,                        !- Case Height {m}
+    0.4,                     !- Fraction of Anti-Sweat Heater Energy to Case
+    1174.5,                  !- Case Defrost Power per Unit Length {W/m}
+    ElectricwithTemperatureTermination,  !- Case Defrost Type
+    A1 Dual Temp Coffin_defrost_1_defrosts_per_day_60_min_plus_0_min_dripdown,  !- Case Defrost Schedule Name
+    A1 Dual Temp Coffin_dripdown_1_defrosts_per_day_60_min_plus_0_min_dripdown,  !- Case Defrost Drip-Down Schedule Name
+    DewpointMethod,          !- Defrost Energy Correction Curve Type
+    OpenMultiShelf_Dairy_DefrostEnergyMult,  !- Defrost Energy Correction Curve Name
+    0,                       !- Under Case HVAC Return Air Fraction
+    NO_RESTOCKING,           !- Refrigerated Case Restocking Schedule Name
+    NO_NIGHT_CURTAINS,       !- Case Credit Fraction Schedule Name
+    -31.7;                   !- Design Evaporator Temperature or Brine Inlet Temperature {C}
