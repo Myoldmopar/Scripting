@@ -70,13 +70,13 @@ function export_symbols() {
         if [ "$2" == "debug" ]; then
         
               #### these are for intel compiler/debug config
-            export FFLAGS="-O0 -traceback -fpp -fpe0 -g -I /usr/include -diag-disable 8291"
+            export FFLAGS="-O0 -traceback -DLINUX -fpp -fpe0 -g -I /usr/include -diag-disable 8290 -diag-disable 8291"
             export LDFLAGS="-O0 -g -B /usr/lib"
 
         elif [ "$2" == "release" ]; then
 
               #### these are for intel release
-            export FFLAGS="-O3 -fpp -fpe0 -I /usr/include -diag-disable 8291"
+            export FFLAGS="-O3 -DLINUX -fpp -fpe0 -I /usr/include -diag-disable 8290 -diag-disable 8291"
             export LDFLAGS="-O3 -B /usr/lib"
       
         fi
@@ -89,13 +89,13 @@ function export_symbols() {
         if [ "$2" == "debug" ]; then
         
               #### these are g95 debug
-            export FFLAGS="-O0 -cpp -g -I /usr/include -ffree-line-length-huge"
+            export FFLAGS="-O0 -DLINUX -cpp -g -I /usr/include -ffree-line-length-huge"
             export LDFLAGS="-O0 -g -B /usr/lib -B /usr/lib/x86_64-linux-gnu"
 
         elif [ "$2" == "release" ]; then
 
               #### these are g95 release
-            export FFLAGS="-O3 -cpp -I /usr/include -ffree-line-length-huge"
+            export FFLAGS="-O3 -DLINUX -cpp -I /usr/include -ffree-line-length-huge"
             export LDFLAGS="-O3 -B /usr/lib -B /usr/lib/x86_64-linux-gnu"
 
         fi
@@ -108,13 +108,13 @@ function export_symbols() {
         if [ "$2" == "debug" ]; then 
         
               #### these are gfortran debug
-            export FFLAGS="-O0 -cpp -g -I /usr/include -ffree-line-length-300"
+            export FFLAGS="-O0 -DLINUX -cpp -g -I /usr/include -ffree-line-length-300"
             export LDFLAGS="-O0 -g -B /usr/lib"
 
         elif [ "$2" == "release" ]; then
 
               #### these are gfortran release
-            export FFLAGS="-O3 -cpp -I /usr/include -ffree-line-length-300"
+            export FFLAGS="-O3 -DLINUX -cpp -I /usr/include -ffree-line-length-300"
             export LDFLAGS="-O3 -B /usr/lib"
 
         fi
@@ -127,13 +127,13 @@ function export_symbols() {
         if [ "$2" == "debug" ]; then
         
               #### these are for mingw debug
-            export FFLAGS="-O0 -g -cpp -I /usr/include -ffree-line-length-300"
+            export FFLAGS="-O0 -DLINUX -g -cpp -I /usr/include -ffree-line-length-300"
             export LDFLAGS="-O0 -g -B /usr/lib -static-libgcc -static-libgfortran"
 
         elif [ "$2" == "release" ]; then
         
               #### these are for mingw release
-            export FFLAGS="-O3 -cpp -I /usr/include  -ffree-line-length-300"
+            export FFLAGS="-O3 -DLINUX -cpp -I /usr/include  -ffree-line-length-300"
             export LDFLAGS="-O3 -B /usr/lib -static-libgcc -static-libgfortran"
 
         fi

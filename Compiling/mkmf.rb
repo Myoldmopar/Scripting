@@ -95,7 +95,7 @@ sub print_formatted_list{
 #begin writing makefile
 open MAKEFILE, ">$mkfile" or die "\aERROR opening file $mkfile for writing: $!\n";
 printf MAKEFILE "# Makefile created by %s $version\n\n", basename($0);
-print  MAKEFILE "This script modified by Edwin Lee to accommodate my own desires...";
+print  MAKEFILE "# This script modified by Edwin Lee to accommodate my own desires...\n";
 print  MAKEFILE "include $opt_t\n\n" if $opt_t; #include template if supplied
 print  MAKEFILE "SRCROOT = $opt_a\n\n" if $opt_a; # make abspath a variable
 if ( $opt_c ) {

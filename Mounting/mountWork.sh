@@ -127,19 +127,19 @@ else # need to do something
 
         # start mounting with home
         if ! mountpoint -q "${MOUNTPOINTHOME}"; then
-            echo "${SUDOPASS}" | sudo -S mount.cifs "${SERVERHOME}"  "${MOUNTPOINTHOME}"  -o user="${THISUSER}",pass="${MOUNTPASS}",domain="${THISDOMAIN}",uid="${THISUID}",rw && MSG+="${MOUNTPOINTHOME}: Mounted\n"  || MSG+="${MOUNTPOINTHOME}: Couldn't mount\n"
+            echo "${SUDOPASS}" | sudo -S mount.cifs "${SERVERHOME}"  "${MOUNTPOINTHOME}"  -o user="${THISUSER}",pass="${MOUNTPASS}",domain="${THISDOMAIN}",uid="${THISUID}",defaults,noatime,_netdev,rw && MSG+="${MOUNTPOINTHOME}: Mounted\n"  || MSG+="${MOUNTPOINTHOME}: Couldn't mount\n"
         else
             MSG+="${MOUNTPOINTHOME}: already mounted\n"
         fi
         # shared
         if ! mountpoint -q "${MOUNTPOINTSHARE}"; then
-            echo "${SUDOPASS}" | sudo -S mount.cifs "${SERVERSHARE}" "${MOUNTPOINTSHARE}" -o user="${THISUSER}",pass="${MOUNTPASS}",domain="${THISDOMAIN}",uid="${THISUID}",rw && MSG+="${MOUNTPOINTSHARE}: Mounted\n"  || MSG+="${MOUNTPOINTSHARE}: Couldn't mount\n"
+            echo "${SUDOPASS}" | sudo -S mount.cifs "${SERVERSHARE}" "${MOUNTPOINTSHARE}" -o user="${THISUSER}",pass="${MOUNTPASS}",domain="${THISDOMAIN}",uid="${THISUID}",defaults,noatime,_netdev,rw && MSG+="${MOUNTPOINTSHARE}: Mounted\n"  || MSG+="${MOUNTPOINTSHARE}: Couldn't mount\n"
         else
             MSG+="${MOUNTPOINTSHARE}: already mounted\n"
         fi
         # cbi specific
         if ! mountpoint -q "${MOUNTPOINTCBI}"; then
-            echo "${SUDOPASS}" | sudo -S mount.cifs "${SERVERCBI}"   "${MOUNTPOINTCBI}"   -o user="${THISUSER}",pass="${MOUNTPASS}",domain="${THISDOMAIN}",uid="${THISUID}",rw && MSG+="${MOUNTPOINTCBI}: Mounted\n"  || MSG+="${MOUNTPOINTCBI}: Couldn't mount\n"
+            echo "${SUDOPASS}" | sudo -S mount.cifs "${SERVERCBI}"   "${MOUNTPOINTCBI}"   -o user="${THISUSER}",pass="${MOUNTPASS}",domain="${THISDOMAIN}",uid="${THISUID}",defaults,noatime,_netdev,rw && MSG+="${MOUNTPOINTCBI}: Mounted\n"  || MSG+="${MOUNTPOINTCBI}: Couldn't mount\n"
         else
             MSG+="${MOUNTPOINTCBI}: already mounted\n"
         fi
